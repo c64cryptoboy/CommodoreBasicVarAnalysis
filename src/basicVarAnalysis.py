@@ -1,9 +1,7 @@
 # TODO:
-# - separate out test files and check back in
-#    - test VIC-20 memory dump of Sword of Fargoal (Epyx, 1982)
-#    - test PET memory dump of Morloc's Tower (Automated Simulations, 1980)
 # - use BASIC code variable parsing to identify variables that are not yet initialized
 # - more custom row/col testing
+# - identify more sword of fargoal variables
 
 import math
 import re
@@ -98,7 +96,13 @@ class MemoryDump:
             $2000-$3FFF: 8K expansion block 1
             $4000-$5FFF: 8K expansion block 2
             $6000-$7FFF: 8K expansion block 3  
+
+        http://www.6502.org/users/andre/petindex/progmod.html
+        PET RAM:
+            $0000-$0FFF or up to $7FFF, depending on model
+            $8000-$8FFF: Screen memory            
         '''
+
         # values that describe the BASIC RAM layout in the memory dump
         self.TXTTAB_val = self.VARTAB_val = self.ARYTAB_val = self.STREND_val \
             = self.FRETOP_val = self.MEMSIZ_val = self.CURLIN_val = self.OLDLIN_val \
@@ -111,7 +115,7 @@ class MemoryDump:
         self.line_nums_for_refs = {}       
 
         self.systems = ['C64', 'VIC20', 'VIC20+3K', 'VIC20+8K+', 'PETROM1.0',
-                       'PETROM2.0+']
+                       'PETROM4.0']
 
         if system not in self.systems:
             exit('Error: unrecognized system "%s"' % system)
@@ -136,7 +140,7 @@ class MemoryDump:
             else:
                 self.TXTTAB_default = 0x1201 # 'VIC20+8K+'
                 
-        elif system == 'PETROM2.0+':
+        elif system == 'PETROM4.0':
             self.TXTTAB = 0x0028
             self.VARTAB = 0x002a
             self.ARYTAB = 0x002c
@@ -504,9 +508,9 @@ class MemoryDump:
         for indexes_key in variable.value.keys():
             ik = list(indexes_key)
             if row is not None:
-                ik[row] = 'row 0-%d' % (variable.dim_sizes[row] - 1)
+                ik[row] = 'col 0-%d' % (variable.dim_sizes[row] - 1)
             if col is not None:
-                ik[col] = 'col 0-%d' % (variable.dim_sizes[col] - 1)
+                ik[col] = 'row 0-%d' % (variable.dim_sizes[col] - 1)
             iter_groups[tuple(ik)] = None
         iter_groups = [list(x) for x in iter_groups]
 
@@ -602,7 +606,7 @@ class MemoryDump:
         print("STREND $%04X/%d: end of arrays (exclusive)" % (self.STREND_val, self.STREND_val))
         print("FRETOP $%04X/%d: end (bottom) of string heap, %d-byte extent" %
             (self.FRETOP_val, self.FRETOP_val, self.MEMSIZ_val - self.FRETOP_val))
-        print("MEMSIZ $%04X/%d: start (top) of string heap" % (self.MEMSIZ_val, self.MEMSIZ_val))
+        print("MEMSIZ $%04X/%d: start (top) of string heap + 1" % (self.MEMSIZ_val, self.MEMSIZ_val))
 
     def print_variables(self):
         """
