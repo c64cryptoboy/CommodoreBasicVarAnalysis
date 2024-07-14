@@ -1,4 +1,8 @@
 # TODO:
+# - separate out test files and check back in
+#    - test VIC-20 memory dump of Sword of Fargoal (Epyx, 1982)
+#    - test PET memory dump of Morloc's Tower (Automated Simulations, 1980)
+# - use BASIC code variable parsing to identify variables that are not yet initialized
 # - more custom row/col testing
 
 import math
@@ -81,22 +85,39 @@ class BasicV2Entry:
 class MemoryDump:
     """
     A class that loads, processes, and stores a memory dump for BASIC variable analysis.
+
+    Attributes:
+        system (str):  'C64', 'VIC20', 'VIC20+3K', 'VIC20+8K+', 'PETROM1.0' or
+                       'PETROM2.0+'  
     """
     def __init__(self, system):
-        self.data = None  # memory dump bytes
-
+        '''
+        VIC-20 RAM:
+            $0000-$03FF: 1K
+            $1000-$1FFF: 4K
+            $2000-$3FFF: 8K expansion block 1
+            $4000-$5FFF: 8K expansion block 2
+            $6000-$7FFF: 8K expansion block 3  
+        '''
         # values that describe the BASIC RAM layout in the memory dump
         self.TXTTAB_val = self.VARTAB_val = self.ARYTAB_val = self.STREND_val \
             = self.FRETOP_val = self.MEMSIZ_val = self.CURLIN_val = self.OLDLIN_val \
-            = None
+            = self.TXTTAB_default = self.data = self.system = None
 
         # collections of discovered variables
-        self.floats = []; self.integers = []; self.strings = [];
+        self.floats = []; self.integers = []; self.strings = []
         self.float_arrays = []; self.integer_arrays = []; self.string_arrays = []
-        self.var_display_formats = {}; self.refs_for_line_nums = {};
-        self.line_nums_for_refs = {}
+        self.var_display_formats = {}; self.refs_for_line_nums = {}
+        self.line_nums_for_refs = {}       
 
-        if system == 'C64' or system == 'VIC20Unexpanded':
+        self.systems = ['C64', 'VIC20', 'VIC20+3K', 'VIC20+8K+', 'PETROM1.0',
+                       'PETROM2.0+']
+
+        if system not in self.systems:
+            exit('Error: unrecognized system "%s"' % system)
+        self.system = system
+
+        if system == 'C64' or system.startswith('VIC20'):
             self.TXTTAB = 0x002b  # Pointer to start of BASIC
             self.VARTAB = 0x002d  # Pointer to start of variables (right after BASIC)
             self.ARYTAB = 0x002f  # Pointer to start of arrays
@@ -105,12 +126,17 @@ class MemoryDump:
             self.MEMSIZ = 0x0037  # Pointer to top (start) of strings (and BASIC RAM end)
             self.CURLIN = 0x0039  # Current BASIC line number (if program running)
             self.OLDLIN = 0x003b  # BASIC line number of last END or STOP executed
-            if system == 'C64':
+            if self.system == 'C64':
                 self.TXTTAB_default = 0x801
-            else:
+            # https://techtinkering.com/articles/basic-line-storage-on-the-vic-20/
+            elif self.system == 'VIC20':
                 self.TXTTAB_default = 0x1001
-
-        elif system == 'PETROM2.0':
+            elif self.system == 'VIC20+3K':
+                self.TXTTAB_default = 0x0401
+            else:
+                self.TXTTAB_default = 0x1201 # 'VIC20+8K+'
+                
+        elif system == 'PETROM2.0+':
             self.TXTTAB = 0x0028
             self.VARTAB = 0x002a
             self.ARYTAB = 0x002c
@@ -121,7 +147,7 @@ class MemoryDump:
             self.OLDLIN = 0x0038
             self.TXTTAB_default = 0x0401
 
-        elif system == 'PETROM1.0':
+        else:  # system == 'PETROM1.0'
             self.TXTTAB = 0x007a
             self.VARTAB = 0x007c
             self.ARYTAB = 0x007e
@@ -131,9 +157,6 @@ class MemoryDump:
             self.CURLIN = 0x0088
             self.OLDLIN = 0x008a
             self.TXTTAB_default = 0x0401    
-
-        else:
-            exit('Error: system "%s" not recognized' % system)
 
     def find_vars(self, filename):
         """
@@ -186,7 +209,8 @@ class MemoryDump:
                 self.FRETOP, self.MEMSIZ, self.CURLIN, self.OLDLIN)]
 
         if self.MEMSIZ_val < len(self.data):
-            exit("Error: dump too small, please dump at least $0000 to $9FFF")
+            exit("Error: dump too small, please dump at least $0000 to $%04X"
+                % (self.MEMSIZ_val - 1))
 
     def parse_name_and_type(self, bytes):
         """
@@ -553,12 +577,18 @@ class MemoryDump:
         print("- BASIC line number on last exit: %d" %
             (self.data[self.OLDLIN] + self.data[self.OLDLIN+1] * 256))
 
-        self._print_mem_loc_info(774, 26, "so LISTing may be disabled")
-        self._print_mem_loc_info(775, 167, "so LISTing may be disabled")
-        self._print_mem_loc_info(792, 71, "so RESTORE key may be disabled")
-        self._print_mem_loc_info(793, 254, "so RESTORE key may be disabled")
-        self._print_mem_loc_info(808, 237, "so RUN/STOP key and/or LISTing may be disabled")
-        self._print_mem_loc_info(809, 246, "so RUN/STOP key and/or LISTing may be disabled")
+        if self.system == 'C64':
+            self._print_mem_loc_info(774, 26, "so LISTing may be disabled")
+            self._print_mem_loc_info(775, 167, "so LISTing may be disabled")
+            self._print_mem_loc_info(792, 71, "so RESTORE key may be disabled")
+            self._print_mem_loc_info(793, 254, "so RESTORE key may be disabled")
+            self._print_mem_loc_info(808, 237, "so RUN/STOP key and/or LISTing may be disabled")
+            self._print_mem_loc_info(809, 246, "so RUN/STOP key and/or LISTing may be disabled")
+        elif self.system.startswith('VIC20'):
+            self._print_mem_loc_info(808, 112, "so RUN/STOP key and/or LISTing may be disabled")
+            # TODO: more could go here
+        elif self.system.startswith('PET'):
+            pass # TODO: more could go here
 
         print("\nBASIC ranges:")
         print("-------------")
