@@ -51,6 +51,7 @@ def vic20_sword_of_fargoal_mem_dump():
     mem.add_formatting("R2", comment = "1 = player in temple, 0 if not")      
     mem.add_formatting("RG", comment = "count of regenerate spells in inventory")
     mem.add_formatting("S",  comment = "monster speed")
+    mem.add_formatting("S1", comment = "1 if shield spell active")
     mem.add_formatting("SF", comment = "1 if sword of fargoal in inventory")   
     mem.add_formatting("SH", comment = "count of shield spells in inventory")
     mem.add_formatting("SR", comment = "start-of-game indicator")
@@ -114,7 +115,7 @@ MEMSIZ $6000/24576: start (top) of string heap + 1
 floats:
 -------
 A: 26
-read: 351, 355, 358
+read: 33, 52, 63, 171, 178, 207, 226, 272, 311, 329
 modified: 343
 Comment: char for player graphic
 
@@ -124,17 +125,17 @@ modified: 38
 Comment: counter to balance key input with monster movement
 
 B: 0
-read: 49, 57, 264, 279
+read: 57, 60, 264, 279
 modified: 143
 Comment: joystick direction
 
 BS: 13
-read: 88, 187, 228, 272, 343
+read: 3, 88, 187, 217, 228, 236, 246, 265, 272, 325, 343
 modified: 88, 187, 228, 272, 343
 Comment: battle skill
 
 C: 41
-read: 40, 220, 287, 297, 317
+read: 22, 147, 220, 231, 287, 297, 317
 modified: 8, 28, 279, 283, 287
 Comment: a screen character
 
@@ -144,7 +145,7 @@ modified: 338
 Comment: an offset used for color memory
 
 D: 1
-read: 147, 220, 275, 305, 315, 358
+read: 147, 220, 275, 290, 305, 311, 315
 modified: 28, 213, 215, 226, 259, 263, 282, 287
 
 DD: 37154
@@ -153,21 +154,21 @@ modified: 343
 Comment: VIA2 DDR register
 
 DE: 1
-read: 3, 355
+read: 3, 325
 modified: 3
 Comment: deepest level reached
 
 EL: 1
-read: 88, 234, 355
+read: 3, 88, 234, 325, 332
 modified: 88, 234, 343
 Comment: experience level
 
 EP: 200
-read: 88
+read: 58, 88
 modified: 88, 347
 
 F: 2
-read: 21, 351
+read: 21
 modified: 17, 18
 
 F2: 0
@@ -185,41 +186,42 @@ modified: 2, 96, 156
 Comment: gold bury count for level (0 to 9)
 
 H: 2
-read: 8, 41, 358
+read: 8
 modified: 8
 
 HP: 1
-read: 41, 53, 83, 183
+read: 41, 53, 83, 103, 183
 modified: 53, 183, 347
 Comment: count of healing potions in inventory
 
 HT: 11
-read: 37, 53, 55, 56, 168, 202, 219, 222, 223, 268, 279, 325, 343
+read: 37, 53, 55, 56, 168, 202, 219, 222, 223, 268, 279, 325, 343, 347
 modified: 53, 56, 168, 202, 219, 268, 343
 Comment: hit points
 
 I: 9
-read: 8, 28, 47, 112, 118, 120, 128, 130, 140, 148, 149, 150, 242, 243, 244, 252, 253, 254, 329
+read: 8, 28, 40, 112, 113, 115, 116, 118, 120, 123, 124, 128, 130, 140, 148, 149, 150, 242, 243, 244, 252, 253, 254, 329
 modified: 8, 28, 40, 82, 112, 113, 115, 116, 118, 120, 122, 123, 124, 128, 130, 140, 145, 147, 148, 156, 276, 325, 329, 335, 338, 343, 347
 
 I1: 2
-read: 33, 102, 134, 137
+read: 33, 102, 126, 133, 134, 135, 136, 137, 209
 modified: 33, 102, 118, 120, 126, 133, 134, 135, 136, 137, 209, 320
 
 I2: 16
+read: 134, 209
 modified: 126, 134, 136, 137, 209
 
 J: 1
-read: 8, 22, 140, 160, 166, 168, 212, 213, 214, 215, 226, 231, 232, 256, 260, 282, 283, 285, 286, 287, 290, 329
-modified: 8, 17, 22, 88, 113, 116, 118, 120, 122, 123, 124, 128, 130, 140, 160, 166, 205, 236, 246, 256, 260, 282, 286, 329, 343 
+read: 8, 22, 118, 120, 122, 123, 124, 130, 140, 160, 166, 168, 212, 213, 214, 215, 226, 231, 232, 256, 260, 282, 283, 285, 286, 287, 290, 329
+modified: 8, 17, 22, 88, 113, 116, 118, 120, 122, 123, 124, 128, 130, 140, 160, 166, 205, 236, 246, 256, 260, 282, 286, 329, 343
 
 K: 32
-read: 60, 62, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 95, 98, 99, 100, 168, 294, 355
-modified: 52, 60, 62, 79, 98, 99, 100, 154, 156, 163, 168, 171, 172, 173, 177, 178, 180, 193, 228, 231, 257, 261, 272, 275, 347  
+read: 33, 52, 60, 62, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 79, 95, 98, 99, 100, 102, 154, 156, 163, 168, 171, 172, 173, 177, 178, 180, 231, 257, 261, 272, 275, 279, 294, 311
+modified: 52, 60, 62, 79, 98, 99, 100, 154, 156, 163, 168, 171, 172, 173, 177, 178, 180, 193, 228, 231, 257, 261, 272, 275, 347
 Comment: value at a screen location under player
 
 L: 1
-read: 3, 7, 27, 28, 44, 53, 98, 99, 153, 168, 172, 174, 177, 180, 188, 193, 219, 221, 236, 240, 246, 250, 266, 268
+read: 2, 3, 5, 7, 27, 28, 33, 53, 98, 99, 153, 168, 172, 174, 177, 180, 188, 193, 219, 221, 228, 236, 240, 246, 250, 266, 268, 272, 332
 modified: 98, 99, 174, 193, 343
 Comment: current dungeon level
 
@@ -229,7 +231,7 @@ modified: 2, 44, 91, 92
 Comment: current light spell: 0=none, 1=on, 2=off
 
 M: 4751.5
-read: 8, 18, 19, 22, 24, 79, 107, 154, 156, 163, 171, 172, 177, 178, 180, 231, 256, 257, 260, 261, 272, 275
+read: 8, 18, 19, 22, 24, 79, 107, 154, 156, 163, 171, 172, 177, 178, 180, 231, 232, 256, 257, 260, 261, 272, 275
 modified: 8, 18, 24, 63, 209
 Comment: a memory address
 
@@ -239,7 +241,7 @@ modified: 70, 71, 282, 286
 Comment: 0 if opponent is monster, 1 if human-like
 
 N: 4256
-read: 27, 28, 33, 52, 110, 112, 147, 148, 149, 150, 178, 336, 355
+read: 27, 28, 33, 52, 110, 112, 147, 148, 149, 150, 178
 modified: 110, 112, 148, 149, 150
 
 N1: 36874
@@ -263,26 +265,26 @@ modified: 338
 Comment: noise freq register
 
 NM: 2
-read: 256
+read: 28, 256, 282
 modified: 28
 Comment: number of non-human opponents on level
 
 NN: 0
-read: 260
+read: 28, 260, 286
 modified: 28
 Comment: number of human-like opponents on level
 
 O: 4233
-read: 33, 48, 52, 60, 63, 96, 102, 108, 112, 148, 150, 160, 166, 167, 168, 171, 172, 174, 177, 178, 207, 209, 272, 320, 329      
+read: 33, 52, 60, 63, 96, 102, 108, 112, 148, 150, 156, 160, 166, 167, 168, 171, 172, 174, 177, 178, 207, 209, 272, 320, 329
 modified: 33, 52, 60, 62, 178
 Comment: screen memory offset
 
 P: 255
-read: 18, 21, 46, 110, 143, 145, 305, 313, 314, 316, 322, 358
+read: 18, 21, 110, 143, 145, 285, 290, 297, 303, 304, 305, 313, 314, 316, 322
 modified: 18, 110, 143, 145, 226, 283, 287, 305, 310, 311, 313, 314, 323
 
 P1: 0
-read: 193, 203
+read: 174, 193, 203
 modified: 2, 100, 172, 173
 
 PA: 37137
@@ -301,21 +303,21 @@ modified: 347
 Comment: dungeon level that contains the sword of fargoal
 
 R: 1
-read: 8, 45, 147, 165, 196, 241, 251, 320, 355
+read: 8, 147, 165, 196, 241, 251, 320
 modified: 8, 28, 165, 241, 251, 320
 
 R1: 50
-read: 45, 59, 86
+read: 45, 56, 59, 86
 modified: 2, 45, 59, 86
 Comment: regeneration rate
 
 S: 19
-read: 2, 43
+read: 2, 38
 modified: 2
 Comment: monster speed
 
 SP: 122
-read: 56, 355
+read: 56
 modified: 56
 
 SR: 0
@@ -324,7 +326,7 @@ modified: 25, 347
 Comment: start-of-game indicator
 
 T1: 100
-read: 184
+read: 153, 156, 158, 161, 164, 184
 modified: 184, 347
 
 T4: 1214
@@ -333,17 +335,17 @@ modified: 343
 Comment: total game time
 
 TH: 11
-read: 53, 56, 88, 358
+read: 3, 53, 56, 88
 modified: 88, 347
 Comment: maximum hit points
 
 TP: 1
-read: 42, 52, 190, 200, 230
+read: 42, 52, 103, 190, 200, 230
 modified: 52, 190, 233, 347
 Comment: count of teleport spells in inventory
 
 V: 1
-read: 16, 62, 124, 161, 164, 257, 259, 261, 263, 271, 272, 275, 276, 278
+read: 16, 62, 124, 130, 161, 164, 257, 259, 261, 263, 271, 272, 275, 276, 278
 modified: 15, 60, 68, 69, 98, 99, 130, 160, 256, 260
 
 V2: 36878
@@ -352,7 +354,7 @@ modified: 338
 Comment: volume
 
 W: 3
-read: 8, 124, 131, 132, 291, 292, 358
+read: 8, 98, 99, 124, 131, 132, 291, 292, 310
 modified: 8, 68, 69, 98, 99, 291, 297
 
 W0: 0
@@ -360,35 +362,35 @@ read: 143
 modified: 143
 
 W1: 0
-read: 143
+read: 126, 143
 modified: 125, 143, 180, 272
 
 W2: 0
-read: 143
+read: 126, 143
 modified: 126, 143
 
 W3: 0
-read: 143
+read: 126, 143
 modified: 125, 143, 180, 272
 
 X: 1
-read: 8, 20, 107, 143, 148, 153, 156, 176, 180, 188, 236, 240, 243, 244, 246, 250, 253, 254, 266, 268, 293, 299, 300, 307, 329   
+read: 8, 20, 53, 107, 140, 143, 147, 148, 153, 154, 156, 174, 176, 180, 188, 193, 236, 240, 243, 244, 246, 250, 253, 254, 266, 268, 293, 299, 300, 307, 329
 modified: 8, 53, 65, 107, 108, 140, 143, 147, 148, 153, 174, 180, 188, 236, 240, 241, 246, 250, 251, 265, 296, 329, 343
 
 XL: 20
-read: 293, 307
+read: 293, 299, 300, 307
 modified: 108
 
 Y: 1
-read: 8, 107, 108, 140, 143, 174, 236, 239, 246, 249, 293, 301, 302, 335
+read: 8, 22, 107, 108, 140, 143, 174, 236, 239, 246, 249, 293, 301, 302, 307
 modified: 8, 17, 107, 108, 140, 143, 174, 236, 246, 296
 
 YL: 16
-read: 108, 293, 307
+read: 108, 293, 301, 302, 307
 modified: 108
 
 Z: 372
-read: 15, 16, 18, 24, 108, 161, 164, 305, 308, 309, 311
+read: 15, 16, 18, 24, 108, 161, 163, 164, 305, 308, 309, 311
 modified: 8, 16, 108, 161, 297, 303, 308, 309, 310
 
 Z1: 15
@@ -399,20 +401,176 @@ Z2: 10
 read: 293, 319
 modified: 293
 
+E: value uninitialized
+read: 3, 37, 58, 79, 86, 98, 176, 180, 228, 234, 272, 325
+modified: 79, 86, 98, 176, 180, 228, 234, 272
+Comment: experience points
+
+T2: value uninitialized
+read: 5, 6, 79
+modified: 79
+
+MK: value uninitialized
+read: 5, 228, 272, 325
+modified: 228, 272
+Comment: count of opponents killed
+
+T3: value uninitialized
+read: 6, 7, 325, 328
+modified: 6, 325, 328
+Comment: game timer after sword found
+
+SF: value uninitialized
+read: 27, 28, 220, 225
+modified: 79, 225
+Comment: 1 if sword of fargoal in inventory
+
+TM: value uninitialized
+read: 33, 102, 188
+modified: 188
+Comment: number of maps in inventory
+
+T: value uninitialized
+read: 37, 49, 86, 96, 153, 154, 156, 161, 163, 164, 220, 226, 276
+modified: 86, 96, 154, 158, 163, 164, 226, 276
+Comment: gold in inventory
+
+SH: value uninitialized
+read: 43, 103, 185
+modified: 43, 185, 233
+Comment: count of shield spells in inventory
+
+S1: value uninitialized
+read: 168, 218, 267
+modified: 43, 170, 228, 272, 280
+Comment: 1 if shield spell active
+
+LG: value uninitialized
+read: 44, 103, 186
+modified: 44, 186, 233
+Comment: count of light spells in inventory
+
+RG: value uninitialized
+read: 45, 103, 182
+modified: 45, 182, 233
+Comment: count of regenerate spells in inventory
+
+SK: value uninitialized
+read: 65
+modified: 46, 65
+
+IV: value uninitialized
+read: 47, 103, 192
+modified: 47, 192, 233
+Comment: count of invisibility spells in inventory
+
+V1: value uninitialized
+read: 295
+modified: 47, 272
+Comment: 1 if player is invisible, 0 if not
+
+R2: value uninitialized
+read: 59
+modified: 59, 86
+Comment: 1 = player in temple, 0 if not
+
+Q: value uninitialized
+read: 62
+modified: 60
+
+P2: value uninitialized
+read: 174
+modified: 100, 173
+
+FA: value uninitialized
+read: 103, 191, 197, 198
+modified: 191, 198, 233
+Comment: count of drift spells in inventory
+
+BG: value uninitialized
+read: 103, 184
+modified: 184
+Comment: count of magic sacks in inventory
+
+PL: value uninitialized
+read: 103, 187, 221, 266
+modified: 187
+Comment: enchanted weapon level
+
+V3: value uninitialized
+read: 134, 137
+modified: 134, 137
+Comment: computed values for sound effects
+
+FR: value uninitialized
+read: 145, 194, 216, 223
+modified: 145
+Comment: joystick fire button
+
+CL: value uninitialized
+read: 206
+modified: 168, 172, 177, 178, 198, 201, 208
+Comment: 1 = trap sprung, 0 = evaded
+
+H1: value uninitialized
+read: 202, 228, 272
+modified: 172, 174, 177, 217, 265
+
+PT: value uninitialized
+read: 174, 176
+modified: 173
+
+F1: value uninitialized
+modified: 196
+
+X1: value uninitialized
+read: 219, 220, 221
+modified: 217
+Comment: opponent skill divided by player's battle skill
+
+DY: value uninitialized
+read: 303, 309
+modified: 297, 301, 302
+
+DX: value uninitialized
+read: 303, 308, 309
+modified: 297, 299, 300
+
+F3: value uninitialized
+read: 308, 309
+modified: 297, 308, 309
+Comment: used to keep opponent from getting stuck when moving
+
+M1: value uninitialized
+read: 303, 304, 311, 317, 322
+modified: 297, 311, 323
+
+K2: value uninitialized
+read: 304, 320, 322
+modified: 303, 320, 322
+
+K1: value uninitialized
+read: 311, 315, 317
+modified: 311
+
+M3: value uninitialized
+read: 320, 322, 323
+modified: 320
+
 
 integers:
 ---------
 D%: 506
-read: 96, 102, 112, 149, 150, 329
+read: 33, 52, 63, 96, 102, 112, 149, 150, 178, 209, 297, 322, 329
 modified: 338
 Comment: the constant 506 (= 22 * 23 screen locations)
 
 H%: 15
-read: 217, 221, 236, 244, 246, 254, 265, 266, 278
+read: 217, 221, 236, 244, 246, 254, 265, 266, 271, 278
 modified: 213, 215, 221, 236, 244, 246, 254, 259, 263, 266
 
 M%: 4974
-read: 108, 282, 286, 297, 303, 305, 311, 317, 322
+read: 108, 282, 285, 286, 290, 297, 303, 305, 311, 317, 322
 modified: 225, 228, 235, 282, 286, 311, 315, 316, 322
 
 S%: 9
@@ -424,11 +582,20 @@ strings:
 --------
 A$: h""
 read: 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 334, 335, 336
+modified: 38, 334
 Comment: keyboard input
 
 S$: h"A "
 read: 94, 243, 244, 253, 254
 modified: 43, 44, 45, 47, 236, 239, 243, 246, 249, 253
+
+P$: value uninitialized
+read: 176
+modified: 100, 173
+
+X$: value uninitialized
+read: 216, 222, 228, 264, 272
+modified: 213, 215, 259, 263
 
 
 float arrays:
@@ -468,6 +635,16 @@ Y(col 0-10) = 42, 41, 41, 43, 41, 41, 41, 41, 40, 41, 0
 read: 253
 modified: 347
 Comment: character to display for human-like types
+
+W(): value uninitialized
+modified: 148
+
+F(): value uninitialized
+read: 150
+
+G(): value uninitialized
+read: 276
+modified: 226
 
 
 integer arrays:
@@ -554,6 +731,15 @@ Z%(col 0-10) = 0, 226, 0, 0, 231, 0, 0, 219, 0, 0, 219
 read: 120
 modified: 338
 Comment: sound data
+
+G%(): value uninitialized
+read: 161
+modified: 96, 156, 164
+Comment: piles of buried gold (up to 10)
+
+L%(): value uninitialized
+read: 160
+modified: 96, 156
 
 
 string arrays:

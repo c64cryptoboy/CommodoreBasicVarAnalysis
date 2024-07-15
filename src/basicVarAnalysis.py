@@ -1,16 +1,16 @@
 # TODO:
-# - use BASIC code variable parsing to identify variables that are not yet initialized
+# - Sort uninitialized variables
+# - Do more QA on uninitialized variables
 # - more custom row/col testing
-# - identify more sword of fargoal variables
 
 import math
 import re
 from dataclasses import dataclass, field
 
 FLOAT_TYPE = 0
-STR_TYPE = 1
-FN_TYPE = 2  # not used
-INT_TYPE = 3
+STR_TYPE   = 1
+FN_TYPE    = 2  # not used
+INT_TYPE   = 3
 
 INDENT = " " * 3
 
@@ -64,20 +64,31 @@ class BasicV2Entry:
         name (str):  Name of basic variable (e.g., X, A$, CD%, etc.)
         type (int):  Type of variable (FLOAT_TYPE, STR_TYPE, or INT_TYPE)
         value:  Variable's value in memory capture.  Scalar of type, or if
-                an array, then a dict with values of type.
+                an array, then a dict with values of type.  If None, then
+                value was not initialized by time of memory dump.
         dim_sizes:  If array, an ordered list of dimension cardinalities
     """
-    def __init__(self, name, type, value, dim_sizes = None):
+    def __init__(self, name, type, value = None, dim_sizes = None):
         self.name = name
         self.type = type
         self.value = value
         self.dim_sizes = dim_sizes
+        if self.value == None:
+            self.dim_sizes = []
 
     def is_array(self):
         return self.dim_sizes is not None and len(self.dim_sizes) > 0
 
     def __lt__(self, other):
         return self.name < other.name
+
+    @classmethod
+    def find_var_in_list(cls, var_name, l: list['BasicV2Entry']):
+        for entry in l:
+            if entry.name == var_name:
+                return entry
+        return None
+
 
 
 class MemoryDump:
@@ -108,7 +119,6 @@ class MemoryDump:
             = self.FRETOP_val = self.MEMSIZ_val = self.CURLIN_val = self.OLDLIN_val \
             = self.TXTTAB_default = self.data = self.system = None
 
-        # collections of discovered variables
         self.floats = []; self.integers = []; self.strings = []
         self.float_arrays = []; self.integer_arrays = []; self.string_arrays = []
         self.var_display_formats = {}; self.refs_for_line_nums = {}
@@ -170,9 +180,11 @@ class MemoryDump:
         """
         mem = self.load_mem_dump(filename)
 
+        # discover variables in RAM (not the code)
         self.floats, self.integers, self.strings = self.parse_ram_for_vars()
         self.float_arrays, self.integer_arrays, self.string_arrays = self.parse_ram_for_arrays()
         
+        # discover variables in the code
         self.refs_for_line_nums = self.parse_code_for_var_refs()
 
         # Pivot the line number / variable references index
@@ -190,6 +202,28 @@ class MemoryDump:
                 else:
                     self.line_nums_for_refs[var_mod] = LineNumbersForVarRefs(
                         var_mod, [], [ref.line_num])
+
+        # Include all the variables found in the code, but not yet initialized
+        for variable in self.line_nums_for_refs.values():
+            name = variable.var_name
+
+            if name.endswith("$()"):
+                if BasicV2Entry.find_var_in_list(name, self.string_arrays) is None:            
+                    self.string_arrays.append(BasicV2Entry(name, STR_TYPE))
+            elif name.endswith("%()"):
+                if BasicV2Entry.find_var_in_list(name, self.integer_arrays) is None:            
+                    self.integer_arrays.append(BasicV2Entry(name, INT_TYPE))
+            elif name.endswith("()"):
+                if BasicV2Entry.find_var_in_list(name, self.float_arrays) is None:            
+                    self.float_arrays.append(BasicV2Entry(name, FLOAT_TYPE))
+            elif name.endswith("$"):
+                if BasicV2Entry.find_var_in_list(name, self.strings) is None:            
+                    self.strings.append(BasicV2Entry(name, STR_TYPE))
+            elif name.endswith("%"):
+                if BasicV2Entry.find_var_in_list(name, self.integers) is None:            
+                    self.integers.append(BasicV2Entry(name, INT_TYPE))
+            elif BasicV2Entry.find_var_in_list(name, self.floats) is None:            
+                self.floats.append(BasicV2Entry(name, FLOAT_TYPE))
 
         return mem
 
@@ -360,6 +394,7 @@ class MemoryDump:
         while i < self.STREND_val:
             values = {}
             array_name, array_type = self.parse_name_and_type(self.data[i:i+2])
+            array_name += '()'
             struct_size = self.data[i+2] + self.data[i+3] * 256  # le
             num_dims = self.data[i+4]
             if not (0 < num_dims < 15):  # largest example: DIM A(0,0,0,0,0,0,0,0,0,0,0,0,0,0)
@@ -437,8 +472,6 @@ class MemoryDump:
         For a given variable name, print the BASIC lines that read and modify that variable.
         """         
         name = variable.name
-        if variable.is_array():
-            name += '()'
         if name in self.line_nums_for_refs:
             read_lines = self.line_nums_for_refs[name].read_lines
             mod_lines = self.line_nums_for_refs[name].mod_lines
@@ -450,9 +483,16 @@ class MemoryDump:
     def print_scalar(self, variable):
         """
         Display a scalar variable
-        """           
+        """
+        if variable.name in ['ST', 'TI', 'TI$']:
+            return
+
         formatting = self.get_formatting(variable.name)
-        print("%s: %s" % (variable.name, variable.value))
+        if variable.value is None:
+            val = "value uninitialized"
+        else:
+            val = variable.value
+        print("%s: %s" % (variable.name, val))
         self.print_read_write_lines(variable)
         if formatting is not None and formatting.comment is not None:
             print("Comment: %s" % formatting.comment)        
@@ -462,7 +502,7 @@ class MemoryDump:
         """
         Display an array variable
         """
-        formatting = self.get_formatting(variable.name + '()')
+        formatting = self.get_formatting(variable.name)        
         padding = 0
         if variable.type == STR_TYPE:
             row = col = None
@@ -473,88 +513,91 @@ class MemoryDump:
             row = formatting.row
             col = formatting.col
 
-        # handle default row/col settings.  Row will usually be rightmost index
-        # if not specified, and if col,row (x/y) not specified, they will usually
-        # be the rightmost and 2nd-to-rightmost respectively.
-        if not (row is None and col is None):
-            if len(variable.dim_sizes) == 1:
-                if row == -1 and col >= 0:
-                    row = None
-                elif col == -1 and row >= 0:
-                    col = None
-                elif row == -1 and col == -1:
-                    col = None
-                elif row is not None and col is not None:
-                    exit("Error: can't specify both a row and col on 1-dim array")
-            if row is not None and row > 0 and row == col:
-                exit("Error: can't specify row equal to col")
+        if variable.value is None:
+            print("%s: value uninitialized" % variable.name)
+        else:
+            # handle default row/col settings.  Row will usually be rightmost index
+            # if not specified, and if col,row (x/y) not specified, they will usually
+            # be the rightmost and 2nd-to-rightmost respectively.
+            if not (row is None and col is None):
+                if len(variable.dim_sizes) == 1:
+                    if row == -1 and col >= 0:
+                        row = None
+                    elif col == -1 and row >= 0:
+                        col = None
+                    elif row == -1 and col == -1:
+                        col = None
+                    elif row is not None and col is not None:
+                        exit("Error: can't specify both a row and col on 1-dim array")
+                if row is not None and row > 0 and row == col:
+                    exit("Error: can't specify row equal to col")
 
-            rightmost_dim = len(variable.dim_sizes) - 1
-            if row == -1:
-                if col == -1 or col == rightmost_dim:
-                    col = rightmost_dim
-                    row = col - 1
-                else:  # col is None or 0 <= col <= rightmost_dim-1
-                    row = rightmost_dim
-            if col == -1:  # row is None or row >= 0
-                if row is None or row < rightmost_dim:
-                    col = rightmost_dim
-                else:
-                    col = rightmost_dim-1
+                rightmost_dim = len(variable.dim_sizes) - 1
+                if row == -1:
+                    if col == -1 or col == rightmost_dim:
+                        col = rightmost_dim
+                        row = col - 1
+                    else:  # col is None or 0 <= col <= rightmost_dim-1
+                        row = rightmost_dim
+                if col == -1:  # row is None or row >= 0
+                    if row is None or row < rightmost_dim:
+                        col = rightmost_dim
+                    else:
+                        col = rightmost_dim-1
 
-        # create dimension groupings based on row/col settings
-        # If row and col both None, then no groupings
-        iter_groups = {}  # sets aren't ordered, so using a keys-only dict as a set
-        for indexes_key in variable.value.keys():
-            ik = list(indexes_key)
-            if row is not None:
-                ik[row] = 'col 0-%d' % (variable.dim_sizes[row] - 1)
-            if col is not None:
-                ik[col] = 'row 0-%d' % (variable.dim_sizes[col] - 1)
-            iter_groups[tuple(ik)] = None
-        iter_groups = [list(x) for x in iter_groups]
+            # create dimension groupings based on row/col settings
+            # If row and col both None, then no groupings
+            iter_groups = {}  # sets aren't ordered, so using a keys-only dict as a set
+            for indexes_key in variable.value.keys():
+                ik = list(indexes_key)
+                if row is not None:
+                    ik[row] = 'col 0-%d' % (variable.dim_sizes[row] - 1)
+                if col is not None:
+                    ik[col] = 'row 0-%d' % (variable.dim_sizes[col] - 1)
+                iter_groups[tuple(ik)] = None
+            iter_groups = [list(x) for x in iter_groups]
 
-        for i, indexes_key in enumerate(iter_groups):
-            key = indexes_key[:]
-            if row is not None:  # if organized by row
-                print("%s(%s) = " % (variable.name, ', '.join([str(x) for x in indexes_key])), end='')
-                if col is not None:  # if also organized by col
-                    print()
-                    for c in range(variable.dim_sizes[col]):
-                        key[col]=c
-                        print("%s" % INDENT, end='')
+            for i, indexes_key in enumerate(iter_groups):
+                key = indexes_key[:]
+                if row is not None:  # if organized by row
+                    print("%s%s) = " % (variable.name[:-1], ', '.join([str(x) for x in indexes_key])), end='')
+                    if col is not None:  # if also organized by col
+                        print()
+                        for c in range(variable.dim_sizes[col]):
+                            key[col]=c
+                            print("%s" % INDENT, end='')
+                            for r in range(variable.dim_sizes[row]):
+                                key[row]=r
+                                value = variable.value[tuple(key)]
+                                if r < variable.dim_sizes[row]-1:
+                                    end = ', '
+                                else:
+                                    end = ''
+                                print("%s" % str(value).rjust(padding), end=end)
+                            print()
+                    else: # if organized by row but not col
                         for r in range(variable.dim_sizes[row]):
                             key[row]=r
                             value = variable.value[tuple(key)]
                             if r < variable.dim_sizes[row]-1:
                                 end = ', '
                             else:
-                                end = ''
+                                end = ''                        
                             print("%s" % str(value).rjust(padding), end=end)
-                        print()
-                else: # if organized by row but not col
-                    for r in range(variable.dim_sizes[row]):
-                        key[row]=r
+                        print()   
+                elif col is not None:  # if organized by col but not row
+                    print("%s%s) = " % (variable.name[:-1], ', '.join([str(x) for x in indexes_key])), end='')
+                    print()
+                    for c in range(variable.dim_sizes[col]):
+                        key[col]=c
                         value = variable.value[tuple(key)]
-                        if r < variable.dim_sizes[row]-1:
-                            end = ', '
-                        else:
-                            end = ''                        
-                        print("%s" % str(value).rjust(padding), end=end)
-                    print()              
-            elif col is not None:  # if organized by col but not row
-                print("%s(%s) = " % (variable.name, ', '.join([str(x) for x in indexes_key])), end='')
-                print()
-                for c in range(variable.dim_sizes[col]):
-                    key[col]=c
-                    value = variable.value[tuple(key)]
-                    print("%s%s" % (INDENT, str(value).rjust(padding)))
-            else: # if not organized by row or col
-                if i == 0:
-                    print("%s(%s) = " % (variable.name, ', '.join([str(x) for x in variable.dim_sizes])))
-                print("%s%s(%s) = %s" %
-                    (INDENT, variable.name, ', '.join([str(x) for x in indexes_key]),
-                    variable.value[tuple(key)].rjust(padding)))
+                        print("%s%s" % (INDENT, str(value).rjust(padding)))
+                else: # if not organized by row or col
+                    if i == 0:
+                        print("%s%s) = " % (variable.name[:-1], ', '.join([str(x) for x in variable.dim_sizes])))
+                    print("%s%s%s) = %s" %
+                        (INDENT, variable.name[:-1], ', '.join([str(x) for x in indexes_key]),
+                        variable.value[tuple(key)].rjust(padding)))
 
         self.print_read_write_lines(variable)
         if formatting is not None and formatting.comment is not None:
@@ -677,6 +720,7 @@ class MemoryDump:
         This function breaks up a BASIC line into 0-to-many statements, which
         proc_vars_in_statement() will mine for read/mod xrefs.
         """
+
         line_statements = []
         line = []
         in_quotes = False
@@ -698,7 +742,7 @@ class MemoryDump:
                 line = ""
                 break
 
-            if b == 0x96:  # DEF (skip this statement)
+            if b == 0x83 or b == 0x96:  # DATA or DEF (skip this statement)
                 while i < end_line and self.data[i] != ':':
                     i += 1
                 continue
@@ -712,10 +756,27 @@ class MemoryDump:
                 while i < end_line and self.data[i] not in [0xA7, 0x89]:
                     line.append(self.data[i])                    
                     i += 1
+                   
+                # remove anything within quotes in IF statement
+                # TODO: Rework this ugly block of code
+                #       maybe can remove other quote handling above
+                tmp_line = []
+                j = 0
+                while j < len(line):
+                    if line[j] == ord('"'):
+                        j += 1
+                        while j < len(line) and line[j] != ord('"'):
+                            j += 1
+                        tmp_line.extend([ord('"'),ord('"')])
+                    else:
+                        tmp_line.append(line[j])
+                    j += 1
+                line = tmp_line
+                
                 line_statements.append(line)
                 line = []
                 continue
-            
+
             if b == ord(':'):  # end of statement
                 line_statements.append(line)
                 line = []
@@ -774,6 +835,8 @@ class MemoryDump:
                     tmp_var = self.add_var_to_variables(c, tmp_var, variables)
             elif tmp_var[-1] in ['%', '$']:  # tmp_var len is >= 2
                 tmp_var = self.add_var_to_variables(c, tmp_var, variables)
+        if len(tmp_var) > 0:
+            variables.append(tmp_var)
 
         # Second, determine if it's a read or write reference
         if len(variables) == 0:
