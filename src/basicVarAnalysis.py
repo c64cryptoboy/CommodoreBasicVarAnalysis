@@ -1,5 +1,4 @@
 # TODO:
-# - Sort uninitialized variables
 # - Do more QA on uninitialized variables
 # - more custom row/col testing
 
@@ -224,6 +223,9 @@ class MemoryDump:
                     self.integers.append(BasicV2Entry(name, INT_TYPE))
             elif BasicV2Entry.find_var_in_list(name, self.floats) is None:            
                 self.floats.append(BasicV2Entry(name, FLOAT_TYPE))
+
+        self.floats.sort(); self.integers.sort(); self.strings.sort(); 
+        self.float_arrays.sort(); self.integer_arrays.sort(); self.string_arrays.sort()
 
         return mem
 
@@ -696,6 +698,12 @@ class MemoryDump:
         Entry point for finding variable xrefs in BASIC for reads and modifications.
         This function iterates over each BASIC line and hands it off to
         proc_statements_in_line() for more processing.
+
+        Design note: a generalized lexer/LALR(1) is overkill for finding xrefs,
+           even though a Commodore V2 BASIC BNF is readily available:
+           https://gist.github.com/rkalz/faf947006ef0f63d52dc4c1643770f6f
+           Since tokens have their high-bit set, it's easy to distinguish letters
+           in commands from letters in variable names.
         """         
         line_vars_dict = {}
         i = self.TXTTAB_val - 1
@@ -707,89 +715,77 @@ class MemoryDump:
                 break  # end of BASIC code
             line_number = self.data[i+3] + self.data[i+4] * 256
 
-            start_line = i
+            line_start = i
             i = next_line_offset - 1
             # +5 is first character of code on line
-            refs_for_line_nums = self.proc_statements_in_line(line_number, start_line+5, i)
+            refs_for_line_nums = self.proc_statements_in_line(line_number, line_start+5, i)
             line_vars_dict[line_number] = refs_for_line_nums
 
         return line_vars_dict
 
-    def proc_statements_in_line(self, line_number, start_line, end_line):
+    def proc_statements_in_line(self, line_number, line_start, line_end):
         """
         This function breaks up a BASIC line into 0-to-many statements, which
         proc_vars_in_statement() will mine for read/mod xrefs.
         """
+        basic_line = []; statement = []; statements = []; 
 
-        line_statements = []
-        line = []
-        in_quotes = False
-        i = start_line - 1
-        while i < end_line:  # iterate over line of BASIC
+        # Remove content between double quotes when defining basic_line
+        i = line_start
+        while i <= line_end:
+            if self.data[i] == 0x22:  # double quotes
+                i += 1
+                while i <= line_end and self.data[i] != 0x22:
+                    i += 1
+                basic_line.extend([0x22, 0x22])
+            else:
+                basic_line.append(self.data[i])
             i += 1
-            b = self.data[i]
-            
-            if b == ord('"'):
-                in_quotes = not in_quotes
-                if not in_quotes:
-                    # will (ultimately) output a pair of empty double quotes
-                    # (dropping what they contained)
-                    line.append(ord('"'))
-            if in_quotes:
-                continue
-            
-            if b == 0x8f:  # REM (skip rest of line)
-                line = ""
+
+        # Break up BASIC line into statements
+        i = 0
+        while i < len(basic_line):
+            b = basic_line[i]
+
+            if b == 0x8F:  # REM token n(skip rest of line)
+                statement = []
                 break
 
-            if b == 0x83 or b == 0x96:  # DATA or DEF (skip this statement)
-                while i < end_line and self.data[i] != ':':
+            if b == 0x83 or b == 0x96:  # DATA or DEF tokens (skip this statement)
+                while i < len(basic_line) and basic_line[i] != 0x3A:  # $3a is ':'
                     i += 1
-                continue
-            
-            if b == 0x8B:  # IF
-                # gather bytes until THEN or GOTO, and make bytes their own statement
-                # approach should be able to handle stuff like
-                #    IFA=1THENIFA=1THENIFA=1THENPRINT"Y" without BNF grammar handling
-                # also, anything past THEN is a new statement that could contain a
-                # write, such as IFA=0THENDIMA$(20)       
-                while i < end_line and self.data[i] not in [0xA7, 0x89]:
-                    line.append(self.data[i])                    
-                    i += 1
-                   
-                # remove anything within quotes in IF statement
-                # TODO: Rework this ugly block of code
-                #       maybe can remove other quote handling above
-                tmp_line = []
-                j = 0
-                while j < len(line):
-                    if line[j] == ord('"'):
-                        j += 1
-                        while j < len(line) and line[j] != ord('"'):
-                            j += 1
-                        tmp_line.extend([ord('"'),ord('"')])
-                    else:
-                        tmp_line.append(line[j])
-                    j += 1
-                line = tmp_line
-                
-                line_statements.append(line)
-                line = []
+                i += 1
                 continue
 
-            if b == ord(':'):  # end of statement
-                line_statements.append(line)
-                line = []
+            if b == 0x8B:  # IF token
+                # Gather bytes until THEN or GOTO, and make bytes their own statement
+                # Approach should be able to handle stuff like
+                #    IFA=1THENIFA=1THENIFA=1THENPRINT"Y"
+                # Anything past THEN is a new statement that could potentially
+                # contain a variable mod, such as IFA=0THENDIMA$(20)       
+                while i < len(basic_line) and basic_line[i] not in [0x89, 0xA7]:
+                    statement.append(basic_line[i])          
+                    i += 1
+                statements.append(statement)
+                statement = []
+                i += 1
+                continue
+
+            if b == 0x3A:  # ':' indicates end of statement
+                statements.append(statement)
+                statement = []
             else:
-                line.append(b)
+                statement.append(b)
+            i += 1
 
-        if len(line) > 0:
-            line_statements.append(line)
+        if len(statement) > 0:
+            statements.append(statement)
 
+        # Process each statement
         vars_read_in_line = set(); vars_modified_in_line = set()
-        for statement in line_statements:
+        for statement in statements:
             # drop leading spaces
-            while len(statement) > 0 and statement[0] == ord(' '):
+            while len(statement) > 0 and statement[0] == 0x20:  # $20 = ' '
                 statement = statement[1:]
             if len(statement) > 0:
                 vars_read, vars_mod = self.proc_vars_in_statement(statement)
@@ -848,7 +844,8 @@ class MemoryDump:
             if len(variables) > 1:
                 vars_read.extend(variables[1:])
 
-        # handle INPUT#, INPUT, READ, GET/GET# (all of which can take multiple modded params)
+        # handle INPUT#, INPUT, READ, and GET/GET# tokens
+        # (all of which can take multiple modded params)
         elif statement[0] in [0x84, 0x85, 0x87, 0xa1]:
             vars_mod.extend(variables)
         
@@ -858,7 +855,7 @@ class MemoryDump:
         elif statement[0] & 0x80 != 0:
             vars_read.extend(variables)
 
-        # handle '=' (token $b2) for assignments (IF already handled)
+        # handle '=' (token $b2) for assignments (IF token is already handled)
         # e.g. s8(x0,y0)=z0, only the s8 is write
         #      A=B=B, only A is write (write a -1, because B==B)
         elif 0xb2 in statement:

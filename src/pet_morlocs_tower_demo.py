@@ -51,6 +51,10 @@ AI: 0
 read: 480
 modified: 475
 
+AK: value uninitialized
+read: 5430, 5437, 5450
+modified: 5430, 5437, 5590
+
 AM: 1
 read: 830, 7040
 modified: 1020
@@ -59,6 +63,10 @@ AS: 1.5
 read: 5430, 5824
 modified: 5000
 
+EX: value uninitialized
+read: 5802, 12040
+modified: 5802
+
 HI: 0
 read: 7005
 modified: 5400
@@ -66,6 +74,10 @@ modified: 5400
 HN: 4
 read: 1330, 6140
 modified: 1020, 6140
+
+HT: value uninitialized
+read: 481, 12040
+modified: 810, 10000, 11000, 12020
 
 I: 2
 read: 20, 21, 24, 43, 48, 51, 66, 68, 75, 76, 80, 86, 93, 94, 95, 96, 310, 320, 462, 500, 664, 702, 910, 930, 965, 1030, 1605, 1610, 1613, 1615, 1620, 1640, 1641, 1642, 1643, 1644, 1645, 1646, 1647, 1650, 1660, 4210, 4310, 4320, 4330, 5049, 5050, 5051, 5052, 5391, 5410, 5803, 5820, 5852, 5854, 6212, 6400, 6405, 6410, 6450, 6460, 7508, 11000
@@ -83,6 +95,10 @@ IA: 0
 read: 5391, 5410, 5415, 7020
 modified: 5046, 5391
 
+IB: value uninitialized
+read: 4120, 5281, 5286, 5304, 5306
+modified: 5110, 5120, 5164, 5210, 5260, 5284, 5288, 5307, 6410
+
 IC: 251
 read: 520
 modified: 500
@@ -91,9 +107,20 @@ ID: 2
 read: 475, 1002, 1010, 1020, 1210, 1900, 5045, 5701, 5824, 6300, 12040
 modified: 1000
 
+IH: value uninitialized
+modified: 4210
+
 II: 11
 read: 510, 600
 modified: 510, 600
+
+IJ: value uninitialized
+read: 600, 5630, 5670
+modified: 600, 5700
+
+IM: value uninitialized
+read: 7017
+modified: 7010, 7017
 
 IN: 0
 read: 7005
@@ -183,16 +210,63 @@ LR: 7
 read: 840, 4130, 4400, 4410, 4411, 4412, 4413, 4431, 4432, 4433, 5607
 modified: 4100, 4130, 4150, 5304, 5605, 5702
 
+LS: value uninitialized
+read: 4310
+modified: 4310
+
 LV: 1
 modified: 1601
 
+LX: value uninitialized
+read: 5560
+modified: 5550, 5555
+
+LY: value uninitialized
+read: 5520
+modified: 5510, 5515
+
 M: 0
-read: 650, 5110, 5120, 5164, 5210, 5250, 5260, 5284, 5293, 5294, 7320, 7360, 7400, 7440, 7504, 7506
-modified: 5046, 5110, 5120, 5164, 5210, 5250, 5260, 5284, 5288, 5415, 6400, 6450, 7255, 7310, 7504 
+read: 650, 5110, 5120, 5164, 5210, 5250, 5260, 5284, 5293, 5294, 7320, 7360, 7400, 7440, 7504, 7506 
+modified: 5046, 5110, 5120, 5164, 5210, 5250, 5260, 5284, 5288, 5415, 6400, 6450, 7255, 7310, 7504  
+
+M1: value uninitialized
+read: 5288
+modified: 5110, 5164, 5250
+
+MA: value uninitialized
+modified: 4210
+
+MD: value uninitialized
+read: 830, 6212, 7040
+modified: 710, 4210, 6212
+
+MF: value uninitialized
+read: 7310
+modified: 4250, 7302, 7306
+
+MH: value uninitialized
+read: 5437, 5450
+modified: 4210
+
+ML: value uninitialized
+read: 710, 5410, 7020
+modified: 710, 4210
 
 MM: 4
 read: 650
 modified: 5000
+
+MP: value uninitialized
+read: 5450, 6215, 7500, 7508, 11010
+modified: 4210, 5450, 6215
+
+MQ: value uninitialized
+read: 310, 470, 482, 880, 4117, 4200, 4215, 5408, 5415, 5420, 5502, 5580, 5900, 7007, 7010, 7015, 7016, 7018, 7295, 7508, 11010
+modified: 482, 4200, 4330
+
+MS: value uninitialized
+read: 5410, 7310
+modified: 4210
 
 N: 28
 read: 696, 697, 702, 710, 715, 5801, 5802, 5803
@@ -217,6 +291,10 @@ modified: 148
 NY: 21
 read: 110
 modified: 110
+
+P: value uninitialized
+read: 5420, 5430, 7020, 7040
+modified: 5410, 5415, 7020
 
 PA: 12
 read: 7020
@@ -262,6 +340,10 @@ RS: 20
 read: 73, 1330, 5500, 5502
 modified: 1020, 5502
 
+S: value uninitialized
+read: 5520, 5560
+modified: 5510, 5515, 5550, 5555
+
 SE: 250
 read: 500
 modified: 1210
@@ -274,6 +356,13 @@ SP: 12
 read: 7030
 modified: 1020
 
+SS: value uninitialized
+read: 481
+modified: 800
+
+T0: value uninitialized
+read: 4990
+
 TA: 100
 read: 650, 655, 660, 5100, 5390
 modified: 650, 655, 5000
@@ -281,6 +370,14 @@ modified: 650, 655, 5000
 TC: .6
 read: 4990, 5044, 5045, 12020, 12040
 modified: 4990, 5000, 5044
+
+UX: value uninitialized
+read: 5560
+modified: 5550, 5555
+
+UY: value uninitialized
+read: 5520
+modified: 5510, 5515
 
 V: 0
 
@@ -299,6 +396,10 @@ modified: 850
 V4: 31
 read: 860, 4410, 4431
 modified: 850
+
+W: value uninitialized
+read: 462
+modified: 462
 
 W1: 32
 read: 54, 4220, 5030, 5120, 5288, 5298, 5660
@@ -341,12 +442,16 @@ read: 65, 201, 830, 4108, 5040, 5210, 5260, 5282, 5294, 5295, 5297, 5303, 5306
 modified: 1601, 5294, 5295, 5297
 
 XB: 1
-read: 65, 201, 310, 450, 600, 670, 680, 830, 4410, 4414, 4430, 4433, 5520, 5560, 5620, 5640, 5670  
+read: 65, 201, 310, 450, 600, 670, 680, 830, 4410, 4414, 4430, 4433, 5520, 5560, 5620, 5640, 5670   
 modified: 4101
 
 XL: 7
 read: 600, 697, 5046, 5400, 5520, 5550, 5555, 5801, 5856, 7300, 7360, 7440
 modified: 4108, 5282, 5306
+
+XM: value uninitialized
+read: 56, 57, 310, 450, 5400, 5550, 5555, 5580, 7010, 7260, 7265, 7300, 7360, 7440
+modified: 56, 57, 702, 825, 4220, 7260, 7265, 7360, 7440
 
 XX: 19
 read: 56, 104, 105, 106, 107, 110, 116, 141, 210, 220, 230, 240, 7300, 7302
@@ -365,12 +470,16 @@ read: 65, 201, 830, 4108, 5040, 5120, 5164, 5282, 5293, 5298, 5299, 5303, 5306
 modified: 1601, 5293, 5298, 5299
 
 YB: 42
-read: 65, 201, 310, 450, 600, 670, 680, 830, 4410, 4413, 4430, 4434, 5520, 5560, 5630, 5660, 5680  
+read: 65, 201, 310, 450, 600, 670, 680, 830, 4410, 4413, 4430, 4434, 5520, 5560, 5630, 5660, 5680   
 modified: 4101
 
 YL: 6
 read: 600, 697, 5046, 5400, 5510, 5515, 5560, 5801, 5856, 7300, 7320, 7400
 modified: 4108, 5282, 5306
+
+YM: value uninitialized
+read: 54, 55, 310, 450, 5400, 5510, 5515, 5580, 7010, 7270, 7275, 7300, 7320, 7400
+modified: 54, 55, 702, 825, 826, 4220, 7270, 7275, 7320, 7400
 
 YY: 36
 read: 54, 101, 144, 145, 146, 147, 148, 156, 210, 220, 230, 240, 680, 7300, 7306
@@ -379,115 +488,6 @@ modified: 54, 201, 680, 4410, 4413, 4430, 4434, 5630, 5660, 5680, 7300
 Z: 59468
 read: 51, 900, 1000
 modified: 49
-
-YM: value uninitialized
-read: 54, 55, 310, 450, 5400, 5510, 5515, 5580, 7010, 7270, 7275, 7300, 7320, 7400
-modified: 54, 55, 702, 825, 826, 4220, 7270, 7275, 7320, 7400
-
-XM: value uninitialized
-read: 56, 57, 310, 450, 5400, 5550, 5555, 5580, 7010, 7260, 7265, 7300, 7360, 7440
-modified: 56, 57, 702, 825, 4220, 7260, 7265, 7360, 7440
-
-MQ: value uninitialized
-read: 310, 470, 482, 880, 4117, 4200, 4215, 5408, 5415, 5420, 5502, 5580, 5900, 7007, 7010, 7015, 7016, 7018, 7295, 7508, 11010
-modified: 482, 4200, 4330
-
-W: value uninitialized
-read: 462
-modified: 462
-
-SS: value uninitialized
-read: 481
-modified: 800
-
-HT: value uninitialized
-read: 481, 12040
-modified: 810, 10000, 11000, 12020
-
-IJ: value uninitialized
-read: 600, 5630, 5670
-modified: 600, 5700
-
-ML: value uninitialized
-read: 710, 5410, 7020
-modified: 710, 4210
-
-MD: value uninitialized
-read: 830, 6212, 7040
-modified: 710, 4210, 6212
-
-IB: value uninitialized
-read: 4120, 5281, 5286, 5304, 5306
-modified: 5110, 5120, 5164, 5210, 5260, 5284, 5288, 5307, 6410
-
-MH: value uninitialized
-read: 5437, 5450
-modified: 4210
-
-IH: value uninitialized
-modified: 4210
-
-MS: value uninitialized
-read: 5410, 7310
-modified: 4210
-
-MA: value uninitialized
-modified: 4210
-
-MP: value uninitialized
-read: 5450, 6215, 7500, 7508, 11010
-modified: 4210, 5450, 6215
-
-MF: value uninitialized
-read: 7310
-modified: 4250, 7302, 7306
-
-LS: value uninitialized
-read: 4310
-modified: 4310
-
-T0: value uninitialized
-read: 4990
-
-M1: value uninitialized
-read: 5288
-modified: 5110, 5164, 5250
-
-P: value uninitialized
-read: 5420, 5430, 7020, 7040
-modified: 5410, 5415, 7020
-
-AK: value uninitialized
-read: 5430, 5437, 5450
-modified: 5430, 5437, 5590
-
-UY: value uninitialized
-read: 5520
-modified: 5510, 5515
-
-S: value uninitialized
-read: 5520, 5560
-modified: 5510, 5515, 5550, 5555
-
-LY: value uninitialized
-read: 5520
-modified: 5510, 5515
-
-LX: value uninitialized
-read: 5560
-modified: 5550, 5555
-
-UX: value uninitialized
-read: 5560
-modified: 5550, 5555
-
-EX: value uninitialized
-read: 5802, 12040
-modified: 5802
-
-IM: value uninitialized
-read: 7017
-modified: 7010, 7017
 
 
 integers:
@@ -544,6 +544,9 @@ modified: 13, 1010
 H(col 0-3) = 0, 6, 12, 18
 modified: 12, 20
 
+R(): value uninitialized
+read: 5420, 5590, 5701, 5900, 6140, 6215, 6300, 7020, 7030, 7255
+
 TM(col 0-5) = 0, 10, 13, 2, 1, 1
 read: 11, 5415
 modified: 21
@@ -555,9 +558,6 @@ modified: 29
 ZD(col 0-5) = 3, 0, 3, -2, 5, 5
 read: 11, 7020
 modified: 29
-
-R(): value uninitialized
-read: 5420, 5590, 5701, 5900, 6140, 6215, 6300, 7020, 7030, 7255
 
 
 integer arrays:
@@ -692,7 +692,7 @@ MT%(row 0-30, col 0-7) =
     0,  0,  4,  3,  3,  0,  2,  2
     4,  1,  8,  4, 13,  8,  4, 17
     8,  1,  2, 10, 12,  4, 15, 14
-read: 10, 670, 679, 680, 682, 684, 695, 697, 702, 820, 4110, 4200, 5800, 5801, 5856, 6300, 7504    
+read: 10, 670, 679, 680, 682, 684, 695, 697, 702, 820, 4110, 4200, 5800, 5801, 5856, 6300, 7504     
 modified: 470, 485, 700, 1620, 4330, 5802, 5856, 7504
 Comment: TODO: loaded from 2nd file
 
@@ -808,7 +808,7 @@ read: 664, 697, 702, 710, 715, 5802, 5803, 5854, 6210
 modified: 9, 1660
 Comment: TODO: loaded from 2nd file
 
-TB%(col 0-15) = 32, 108, 123, 98, 124, 225, 255, 254, 126, 127, 97, 252, 226, 251, 236, 160        
+TB%(col 0-15) = 32, 108, 123, 98, 124, 225, 255, 254, 126, 127, 97, 252, 226, 251, 236, 160
 read: 13, 376, 402, 412
 modified: 43
 

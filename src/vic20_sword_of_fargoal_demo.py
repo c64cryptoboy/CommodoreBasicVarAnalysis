@@ -74,7 +74,7 @@ def vic20_sword_of_fargoal_mem_dump():
     mem.add_formatting("D$()", comment = "human-like opponents'names")     
     mem.add_formatting("G%()", comment = "piles of buried gold (up to 10)")        
     mem.add_formatting("H%()", comment = "monsters' hit points")
-    mem.add_formatting("J%()", comment = "joystick screen-offset decoding for x,y")
+    mem.add_formatting("J%()", width = 3, comment = "joystick screen-offset decoding for x,y")
     mem.add_formatting("M%()", comment = "monster-likes' locations")      
     mem.add_formatting("N%()", comment = "human-like opponents' locations")    
     mem.add_formatting("R%()", comment = "human-like opponents' skill levels")
@@ -129,6 +129,11 @@ read: 57, 60, 264, 279
 modified: 143
 Comment: joystick direction
 
+BG: value uninitialized
+read: 103, 184
+modified: 184
+Comment: count of magic sacks in inventory
+
 BS: 13
 read: 3, 88, 187, 217, 228, 236, 246, 265, 272, 325, 343
 modified: 88, 187, 228, 272, 343
@@ -138,6 +143,11 @@ C: 41
 read: 22, 147, 220, 231, 287, 297, 317
 modified: 8, 28, 279, 283, 287
 Comment: a screen character
+
+CL: value uninitialized
+read: 206
+modified: 168, 172, 177, 178, 198, 201, 208
+Comment: 1 = trap sprung, 0 = evaded
 
 CM: 33792
 read: 33, 52, 60, 63, 112, 140, 166, 167, 178, 207, 304, 317
@@ -158,6 +168,19 @@ read: 3, 325
 modified: 3
 Comment: deepest level reached
 
+DX: value uninitialized
+read: 303, 308, 309
+modified: 297, 299, 300
+
+DY: value uninitialized
+read: 303, 309
+modified: 297, 301, 302
+
+E: value uninitialized
+read: 3, 37, 58, 79, 86, 98, 176, 180, 228, 234, 272, 325
+modified: 79, 86, 98, 176, 180, 228, 234, 272
+Comment: experience points
+
 EL: 1
 read: 3, 88, 234, 325, 332
 modified: 88, 234, 343
@@ -171,14 +194,32 @@ F: 2
 read: 21
 modified: 17, 18
 
+F1: value uninitialized
+modified: 196
+
 F2: 0
 read: 310
 modified: 293, 310
+
+F3: value uninitialized
+read: 308, 309
+modified: 297, 308, 309
+Comment: used to keep opponent from getting stuck when moving
+
+FA: value uninitialized
+read: 103, 191, 197, 198
+modified: 191, 198, 233
+Comment: count of drift spells in inventory
 
 FL: 0
 read: 283, 288
 modified: 231, 232, 283
 Comment: 1 if leaving a fight via teleport spell
+
+FR: value uninitialized
+read: 145, 194, 216, 223
+modified: 145
+Comment: joystick fire button
 
 GD: 0
 read: 95, 96, 155, 156, 160
@@ -188,6 +229,10 @@ Comment: gold bury count for level (0 to 9)
 H: 2
 read: 8
 modified: 8
+
+H1: value uninitialized
+read: 202, 228, 272
+modified: 172, 174, 177, 217, 265
 
 HP: 1
 read: 41, 53, 83, 103, 183
@@ -211,6 +256,11 @@ I2: 16
 read: 134, 209
 modified: 126, 134, 136, 137, 209
 
+IV: value uninitialized
+read: 47, 103, 192
+modified: 47, 192, 233
+Comment: count of invisibility spells in inventory
+
 J: 1
 read: 8, 22, 118, 120, 122, 123, 124, 130, 140, 160, 166, 168, 212, 213, 214, 215, 226, 231, 232, 256, 260, 282, 283, 285, 286, 287, 290, 329
 modified: 8, 17, 22, 88, 113, 116, 118, 120, 122, 123, 124, 128, 130, 140, 160, 166, 205, 236, 246, 256, 260, 282, 286, 329, 343
@@ -219,6 +269,14 @@ K: 32
 read: 33, 52, 60, 62, 64, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 79, 95, 98, 99, 100, 102, 154, 156, 163, 168, 171, 172, 173, 177, 178, 180, 231, 257, 261, 272, 275, 279, 294, 311
 modified: 52, 60, 62, 79, 98, 99, 100, 154, 156, 163, 168, 171, 172, 173, 177, 178, 180, 193, 228, 231, 257, 261, 272, 275, 347
 Comment: value at a screen location under player
+
+K1: value uninitialized
+read: 311, 315, 317
+modified: 311
+
+K2: value uninitialized
+read: 304, 320, 322
+modified: 303, 320, 322
 
 L: 1
 read: 2, 3, 5, 7, 27, 28, 33, 53, 98, 99, 153, 168, 172, 174, 177, 180, 188, 193, 219, 221, 228, 236, 240, 246, 250, 266, 268, 272, 332
@@ -230,15 +288,33 @@ read: 48, 63, 91, 287, 295
 modified: 2, 44, 91, 92
 Comment: current light spell: 0=none, 1=on, 2=off
 
+LG: value uninitialized
+read: 44, 103, 186
+modified: 44, 186, 233
+Comment: count of light spells in inventory
+
 M: 4751.5
 read: 8, 18, 19, 22, 24, 79, 107, 154, 156, 163, 171, 172, 177, 178, 180, 231, 232, 256, 257, 260, 261, 272, 275
 modified: 8, 18, 24, 63, 209
 Comment: a memory address
 
+M1: value uninitialized
+read: 303, 304, 311, 317, 322
+modified: 297, 311, 323
+
 M2: 0
 read: 209, 231, 270, 272, 291, 313, 316
 modified: 70, 71, 282, 286
 Comment: 0 if opponent is monster, 1 if human-like
+
+M3: value uninitialized
+read: 320, 322, 323
+modified: 320
+
+MK: value uninitialized
+read: 5, 228, 272, 325
+modified: 228, 272
+Comment: count of opponents killed
 
 N: 4256
 read: 27, 28, 33, 52, 110, 112, 147, 148, 149, 150, 178
@@ -287,6 +363,10 @@ P1: 0
 read: 174, 193, 203
 modified: 2, 100, 172, 173
 
+P2: value uninitialized
+read: 174
+modified: 100, 173
+
 PA: 37137
 read: 143, 145
 modified: 343
@@ -296,6 +376,19 @@ PB: 37152
 read: 143
 modified: 343
 Comment: port B (for joystick reads)
+
+PL: value uninitialized
+read: 103, 187, 221, 266
+modified: 187
+Comment: enchanted weapon level
+
+PT: value uninitialized
+read: 174, 176
+modified: 173
+
+Q: value uninitialized
+read: 62
+modified: 60
 
 QL: 17
 read: 27
@@ -311,10 +404,39 @@ read: 45, 56, 59, 86
 modified: 2, 45, 59, 86
 Comment: regeneration rate
 
+R2: value uninitialized
+read: 59
+modified: 59, 86
+Comment: 1 = player in temple, 0 if not
+
+RG: value uninitialized
+read: 45, 103, 182
+modified: 45, 182, 233
+Comment: count of regenerate spells in inventory
+
 S: 19
 read: 2, 38
 modified: 2
 Comment: monster speed
+
+S1: value uninitialized
+read: 168, 218, 267
+modified: 43, 170, 228, 272, 280
+Comment: 1 if shield spell active
+
+SF: value uninitialized
+read: 27, 28, 220, 225
+modified: 79, 225
+Comment: 1 if sword of fargoal in inventory
+
+SH: value uninitialized
+read: 43, 103, 185
+modified: 43, 185, 233
+Comment: count of shield spells in inventory
+
+SK: value uninitialized
+read: 65
+modified: 46, 65
 
 SP: 122
 read: 56
@@ -325,9 +447,23 @@ read: 25
 modified: 25, 347
 Comment: start-of-game indicator
 
+T: value uninitialized
+read: 37, 49, 86, 96, 153, 154, 156, 161, 163, 164, 220, 226, 276
+modified: 86, 96, 154, 158, 163, 164, 226, 276
+Comment: gold in inventory
+
 T1: 100
 read: 153, 156, 158, 161, 164, 184
 modified: 184, 347
+
+T2: value uninitialized
+read: 5, 6, 79
+modified: 79
+
+T3: value uninitialized
+read: 6, 7, 325, 328
+modified: 6, 325, 328
+Comment: game timer after sword found
 
 T4: 1214
 read: 328
@@ -339,6 +475,11 @@ read: 3, 53, 56, 88
 modified: 88, 347
 Comment: maximum hit points
 
+TM: value uninitialized
+read: 33, 102, 188
+modified: 188
+Comment: number of maps in inventory
+
 TP: 1
 read: 42, 52, 103, 190, 200, 230
 modified: 52, 190, 233, 347
@@ -348,10 +489,20 @@ V: 1
 read: 16, 62, 124, 130, 161, 164, 257, 259, 261, 263, 271, 272, 275, 276, 278
 modified: 15, 60, 68, 69, 98, 99, 130, 160, 256, 260
 
+V1: value uninitialized
+read: 295
+modified: 47, 272
+Comment: 1 if player is invisible, 0 if not
+
 V2: 36878
 read: 40, 64, 113, 115, 116, 118, 120, 122, 123, 124, 126, 128, 130, 133, 134, 135, 136, 137, 139, 168, 209
 modified: 338
 Comment: volume
+
+V3: value uninitialized
+read: 134, 137
+modified: 134, 137
+Comment: computed values for sound effects
 
 W: 3
 read: 8, 98, 99, 124, 131, 132, 291, 292, 310
@@ -377,6 +528,11 @@ X: 1
 read: 8, 20, 53, 107, 140, 143, 147, 148, 153, 154, 156, 174, 176, 180, 188, 193, 236, 240, 243, 244, 246, 250, 253, 254, 266, 268, 293, 299, 300, 307, 329
 modified: 8, 53, 65, 107, 108, 140, 143, 147, 148, 153, 174, 180, 188, 236, 240, 241, 246, 250, 251, 265, 296, 329, 343
 
+X1: value uninitialized
+read: 219, 220, 221
+modified: 217
+Comment: opponent skill divided by player's battle skill
+
 XL: 20
 read: 293, 299, 300, 307
 modified: 108
@@ -400,162 +556,6 @@ modified: 293
 Z2: 10
 read: 293, 319
 modified: 293
-
-E: value uninitialized
-read: 3, 37, 58, 79, 86, 98, 176, 180, 228, 234, 272, 325
-modified: 79, 86, 98, 176, 180, 228, 234, 272
-Comment: experience points
-
-T2: value uninitialized
-read: 5, 6, 79
-modified: 79
-
-MK: value uninitialized
-read: 5, 228, 272, 325
-modified: 228, 272
-Comment: count of opponents killed
-
-T3: value uninitialized
-read: 6, 7, 325, 328
-modified: 6, 325, 328
-Comment: game timer after sword found
-
-SF: value uninitialized
-read: 27, 28, 220, 225
-modified: 79, 225
-Comment: 1 if sword of fargoal in inventory
-
-TM: value uninitialized
-read: 33, 102, 188
-modified: 188
-Comment: number of maps in inventory
-
-T: value uninitialized
-read: 37, 49, 86, 96, 153, 154, 156, 161, 163, 164, 220, 226, 276
-modified: 86, 96, 154, 158, 163, 164, 226, 276
-Comment: gold in inventory
-
-SH: value uninitialized
-read: 43, 103, 185
-modified: 43, 185, 233
-Comment: count of shield spells in inventory
-
-S1: value uninitialized
-read: 168, 218, 267
-modified: 43, 170, 228, 272, 280
-Comment: 1 if shield spell active
-
-LG: value uninitialized
-read: 44, 103, 186
-modified: 44, 186, 233
-Comment: count of light spells in inventory
-
-RG: value uninitialized
-read: 45, 103, 182
-modified: 45, 182, 233
-Comment: count of regenerate spells in inventory
-
-SK: value uninitialized
-read: 65
-modified: 46, 65
-
-IV: value uninitialized
-read: 47, 103, 192
-modified: 47, 192, 233
-Comment: count of invisibility spells in inventory
-
-V1: value uninitialized
-read: 295
-modified: 47, 272
-Comment: 1 if player is invisible, 0 if not
-
-R2: value uninitialized
-read: 59
-modified: 59, 86
-Comment: 1 = player in temple, 0 if not
-
-Q: value uninitialized
-read: 62
-modified: 60
-
-P2: value uninitialized
-read: 174
-modified: 100, 173
-
-FA: value uninitialized
-read: 103, 191, 197, 198
-modified: 191, 198, 233
-Comment: count of drift spells in inventory
-
-BG: value uninitialized
-read: 103, 184
-modified: 184
-Comment: count of magic sacks in inventory
-
-PL: value uninitialized
-read: 103, 187, 221, 266
-modified: 187
-Comment: enchanted weapon level
-
-V3: value uninitialized
-read: 134, 137
-modified: 134, 137
-Comment: computed values for sound effects
-
-FR: value uninitialized
-read: 145, 194, 216, 223
-modified: 145
-Comment: joystick fire button
-
-CL: value uninitialized
-read: 206
-modified: 168, 172, 177, 178, 198, 201, 208
-Comment: 1 = trap sprung, 0 = evaded
-
-H1: value uninitialized
-read: 202, 228, 272
-modified: 172, 174, 177, 217, 265
-
-PT: value uninitialized
-read: 174, 176
-modified: 173
-
-F1: value uninitialized
-modified: 196
-
-X1: value uninitialized
-read: 219, 220, 221
-modified: 217
-Comment: opponent skill divided by player's battle skill
-
-DY: value uninitialized
-read: 303, 309
-modified: 297, 301, 302
-
-DX: value uninitialized
-read: 303, 308, 309
-modified: 297, 299, 300
-
-F3: value uninitialized
-read: 308, 309
-modified: 297, 308, 309
-Comment: used to keep opponent from getting stuck when moving
-
-M1: value uninitialized
-read: 303, 304, 311, 317, 322
-modified: 297, 311, 323
-
-K2: value uninitialized
-read: 304, 320, 322
-modified: 303, 320, 322
-
-K1: value uninitialized
-read: 311, 315, 317
-modified: 311
-
-M3: value uninitialized
-read: 320, 322, 323
-modified: 320
 
 
 integers:
@@ -585,13 +585,13 @@ read: 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 334, 335, 336
 modified: 38, 334
 Comment: keyboard input
 
-S$: h"A "
-read: 94, 243, 244, 253, 254
-modified: 43, 44, 45, 47, 236, 239, 243, 246, 249, 253
-
 P$: value uninitialized
 read: 176
 modified: 100, 173
+
+S$: h"A "
+read: 94, 243, 244, 253, 254
+modified: 43, 44, 45, 47, 236, 239, 243, 246, 249, 253
 
 X$: value uninitialized
 read: 216, 222, 228, 264, 272
@@ -617,6 +617,13 @@ E(col 0-10) = 0, 43, 38, 61, 59, 0, 0, 0, 0, 0, 0
 read: 168
 modified: 347
 
+F(): value uninitialized
+read: 150
+
+G(): value uninitialized
+read: 276
+modified: 226
+
 R(col 0-10) = 0, 4787.5, 4991, 4939.5, 4914.5, 5029, 4978, 4830.5, 5044, 5002.5, 4764.5
 read: 8
 modified: 8
@@ -625,6 +632,9 @@ V(col 0-10) = 0, 2, 1, 4, 3, 0, 0, 0, 0, 0, 0
 read: 16
 modified: 343
 Comment: constants used in random dungeon creation
+
+W(): value uninitialized
+modified: 148
 
 X(col 0-10) = 31, 27, 27, 27, 28, 27, 30, 29, 30, 30, 0
 read: 243
@@ -635,16 +645,6 @@ Y(col 0-10) = 42, 41, 41, 43, 41, 41, 41, 41, 40, 41, 0
 read: 253
 modified: 347
 Comment: character to display for human-like types
-
-W(): value uninitialized
-modified: 148
-
-F(): value uninitialized
-read: 150
-
-G(): value uninitialized
-read: 276
-modified: 226
 
 
 integer arrays:
@@ -666,13 +666,22 @@ D%(col 0-3) = 1, 0, 0, 0
 read: 263, 287, 343
 modified: 28, 290
 
+G%(): value uninitialized
+read: 161
+modified: 96, 156, 164
+Comment: piles of buried gold (up to 10)
+
 J%(col 0-2, row 0-2) =
    -23, -22, -21
-   -1, 0, 1
-   21, 22, 23
+    -1,   0,   1
+    21,  22,  23
 read: 143, 343
 modified: 343
 Comment: joystick screen-offset decoding for x,y
+
+L%(): value uninitialized
+read: 160
+modified: 96, 156
 
 M%(col 0-4) = 4983, 4881, 4978, 0, 0
 read: 256, 282
@@ -731,15 +740,6 @@ Z%(col 0-10) = 0, 226, 0, 0, 231, 0, 0, 219, 0, 0, 219
 read: 120
 modified: 338
 Comment: sound data
-
-G%(): value uninitialized
-read: 161
-modified: 96, 156, 164
-Comment: piles of buried gold (up to 10)
-
-L%(): value uninitialized
-read: 160
-modified: 96, 156
 
 
 string arrays:
